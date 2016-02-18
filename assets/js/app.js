@@ -1,7 +1,6 @@
 var NAMES_DELAY = 100;
 var CARD_TEMPLATE = _.template('<div class="name-card col s12 m12"><div class="name-card card-panel teal"><span class="white-text"><%- title %></span><span class="right white-text"><%- 5.0 %></span></div></div>');
 
-
 $.fn.extend({
     animateCss: function (animationName, callback) {
         var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
