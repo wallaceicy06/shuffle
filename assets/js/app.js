@@ -17,6 +17,56 @@ function init() {
   $('.button-collapse').sideNav();
 
   setGoButtonEnabled(true);
+  
+  $('#btn-import').click(function () {
+    var fileChooser = document.getElementById('file-chooser');
+
+    if (fileChooser.files.length == 0) {
+      return;
+    }
+
+    var file = fileChooser.files[0];
+    document.getElementById('file-form').reset();
+
+    if (file.type !== 'text/csv' && file.type !== 'text/tsv') {
+      return;
+    }
+
+    importNames(file, function (names) {
+      console.log(names);
+    });
+  });
+}
+
+function importNames(file, cb) {
+  var reader = new FileReader();
+  reader.onload = function (e) { 
+    var lines = e.target.result.split('\n');
+    var names = [];
+
+    _.each(lines, function (line) {
+      tokens = [];
+
+      if (file.type === 'text/csv') {
+        tokens = line.split(',');
+      } else if (file.type === 'text/tsv') {
+        tokens = line.split('\t');
+      }
+
+      if (tokens.length < 2) {
+        return;
+      } 
+
+      var name = tokens[0];
+      var value = parseFloat(tokens[1]);
+      
+      names.push({ name: name, value: value });
+    });
+
+    cb(names);
+  }
+
+  reader.readAsText(file);
 }
 
 function setGoButtonEnabled(enabled) {
