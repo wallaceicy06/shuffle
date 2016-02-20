@@ -1,11 +1,11 @@
 var allCards = [];
 var NAMES_DELAY = 100;
 var CARD_TEMPLATE = _.template('<div class="animated <%= animation %> name-card col s12 m12"><div class="name-card card-panel teal"><span class="white-text"><%- title %></span><span class="right white-text"><%- value %></span></div></div>');
+var ANIMATION_END = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
 
 $.fn.extend({
   animateCss: function (animationName, callback) {
-    var animationEnd = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
-    $(this).addClass('animated ' + animationName).one(animationEnd, function() {
+    $(this).addClass('animated ' + animationName).one(ANIMATION_END, function() {
     $(this).removeClass('animated ' + animationName);
       callback();
     });
@@ -88,10 +88,12 @@ function shuffleCardsByPriority(cards) {
 }
 
 function runShuffle(cb) {
+  var delay = parseFloat($('#delay').val()) * 1000;
+
   removeAllCards(function () { 
     var shuffled = shuffleCardsByPriority(allCards);
     
-    addAllCards(shuffled, 500, 'fadeInUp', cb);
+    addAllCards(shuffled, delay, 'fadeInUp', cb);
   });
 }
 
@@ -112,9 +114,13 @@ function addAllCards(cards, delay, animation, cb) {
   _.each(cards, function(card, index) {
     var a = new Promise(function (resolve) {
       setTimeout(function () {
-        var $newElement = $cardsList.append(CARD_TEMPLATE({title: card.name, value: card.value, animation: animation}));
+        var $newElement = $cardsList.append(
+            CARD_TEMPLATE({ title: card.name, 
+                            value: card.value,
+                            animation: animation })
+        );
     
-        $newElement.one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() { resolve(); });
+        $newElement.one(ANIMATION_END, function() { resolve(); });
     
         scrollToBottom();
       }, delay * index); 
