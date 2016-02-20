@@ -36,9 +36,6 @@ function init() {
     importNames(file, function (names) {
       allCards = _.concat(allCards, names);
       addAllCards(allCards, 0, 'lightSpeedIn', function() {});
-      // _.each(names, function (n) {
-        // addCard(n.name, n.value); 
-      // });
     });
   });
 }
