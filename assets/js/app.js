@@ -83,15 +83,28 @@ function setGoButtonEnabled(enabled) {
 }
 
 function shuffleCardsByPriority(cards) {
-  var orderedCards = _.sortBy(cards, 'value').reverse();
-  return orderedCards;
+  var groupedCards = _.groupBy(cards, 'value');
+
+  var shuffledGroups = _.mapValues(groupedCards, function(group) { return _.shuffle(group) });
+
+  var shuffledCards = [];
+  _.each(_.sortBy(_.keys(shuffledGroups)).reverse(), function(k) {
+    [].push.apply(shuffledCards, shuffledGroups[k]); 
+  });
+
+  return shuffledCards;
 }
 
 function runShuffle(cb) {
-  var delay = parseFloat($('#delay').val()) * 1000;
+  var delay = parseFloat(document.getElementById('delay').value) * 1000;
+  var order = document.getElementById('selectOrder').value;
 
   removeAllCards(function () { 
     var shuffled = shuffleCardsByPriority(allCards);
+
+    if (order === 'ascending') {
+      shuffled = shuffled.reverse();
+    }
     
     addAllCards(shuffled, delay, 'fadeInUp', cb);
   });
