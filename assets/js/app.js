@@ -1,4 +1,5 @@
 var allCards = [];
+var outputFile = null;
 var NAMES_DELAY = 100;
 var CARD_TEMPLATE = _.template('<div class="animated <%= animation %> name-card col s12 m12"><div class="name-card card-panel teal"><span class="white-text"><%- title %></span><span class="right white-text"><%- value %></span></div></div>');
 var ANIMATION_END = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
@@ -107,7 +108,25 @@ function runShuffle(cb) {
     }
     
     addAllCards(shuffled, delay, 'fadeInUp', cb);
+    makeOutputFile(shuffled);
   });
+}
+
+function makeOutputFile(shuffled) {
+  var lines = _.map(shuffled, function (card, index) {
+    var humanIndex = index + 1;
+    return new String(humanIndex + '. ' + card.name + ' (' + card.value + ')\n');
+  });
+
+  var data = new Blob(lines, { type: 'text/plain' });
+
+  if (outputFile !== null) {
+    window.URL.revokeObjectURL(outputFile);
+  }
+
+  outputFile = window.URL.createObjectURL(data);
+
+  document.getElementById('downloadLink').href = outputFile;
 }
 
 function addCard(title, value) {
