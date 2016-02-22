@@ -1,10 +1,10 @@
 define([
   'jquery',
   'lodash',
-  'materialize'
-], function ($, _, materialize) {
-  var allCards = [];
-  var outputFile = null;
+  'materialize',
+  'models/cards',
+  'models/fileIO'
+], function ($, _, materialize, cards, io) {
   var NAMES_DELAY = 100;
   var CARD_TEMPLATE = _.template('<div class="animated <%= animation %> name-card col s12 m12"><div class="name-card card-panel teal"><span class="white-text"><%- title %></span><span class="right white-text"><%- value %></span></div></div>');
   var ANIMATION_END = 'webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend';
@@ -39,42 +39,16 @@ define([
         return;
       }
 
-      importNames(file, function (names) {
-        allCards = _.concat(allCards, names);
-        addAllCards(allCards, 0, 'lightSpeedIn', function() {});
+      io.parseNames(file, function (names) {
+        _.each(names, function (name) {
+          cards.add(name.name, name.value);  
+        });
+
+        removeAllCards(function () {
+          addAllCards(cards.all(), 0, 'lightSpeedIn', function() {});
+        });
       });
     });
-  }
-
-  function importNames(file, cb) {
-    var reader = new FileReader();
-    reader.onload = function (e) { 
-      var lines = e.target.result.split('\n');
-      var names = [];
-
-      _.each(lines, function (line) {
-        tokens = [];
-
-        if (file.type === 'text/csv') {
-          tokens = line.split(',');
-        } else if (file.type === 'text/tsv') {
-          tokens = line.split('\t');
-        }
-
-        if (tokens.length < 2) {
-          return;
-        } 
-
-        var name = tokens[0];
-        var value = parseFloat(tokens[1]);
-        
-        names.push({ name: name, value: value });
-      });
-
-      cb(names);
-    }
-
-    reader.readAsText(file);
   }
 
   function setGoButtonEnabled(enabled) {
@@ -88,50 +62,25 @@ define([
     }
   }
 
-  function shuffleCardsByPriority(cards) {
-    var groupedCards = _.groupBy(cards, 'value');
-
-    var shuffledGroups = _.mapValues(groupedCards, function(group) { return _.shuffle(group) });
-
-    var shuffledCards = [];
-    _.each(_.sortBy(_.keys(shuffledGroups)).reverse(), function(k) {
-      [].push.apply(shuffledCards, shuffledGroups[k]); 
-    });
-
-    return shuffledCards;
-  }
-
   function runShuffle(cb) {
     var delay = parseFloat(document.getElementById('delay').value) * 1000;
     var order = document.getElementById('selectOrder').value;
 
     removeAllCards(function () { 
-      var shuffled = shuffleCardsByPriority(allCards);
+      var shuffled = cards.shuffleByPriority();
 
       if (order === 'ascending') {
         shuffled = shuffled.reverse();
       }
       
       addAllCards(shuffled, delay, 'fadeInUp', cb);
-      makeOutputFile(shuffled);
+      updateOutputFileLink(shuffled);
     });
   }
 
-  function makeOutputFile(shuffled) {
-    var lines = _.map(shuffled, function (card, index) {
-      var humanIndex = index + 1;
-      return new String(humanIndex + '. ' + card.name + ' (' + card.value + ')\n');
-    });
-
-    var data = new Blob(lines, { type: 'text/plain' });
-
-    if (outputFile !== null) {
-      window.URL.revokeObjectURL(outputFile);
-    }
-
-    outputFile = window.URL.createObjectURL(data);
-
-    document.getElementById('downloadLink').href = outputFile;
+  function updateOutputFileLink (shuffled) {
+    document.getElementById('downloadLink').href = 
+        io.generateOutputFile(shuffled);
   }
 
   function addCard(title, value) {
