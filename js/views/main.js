@@ -45,7 +45,7 @@ define([
         });
 
         removeAllCards(function () {
-          addAllCards(cards.all(), 0, 'lightSpeedIn', function() {});
+          addAllCards($('#cards-list'), cards.all(), 0, 'lightSpeedIn', function() {});
         });
       });
     });
@@ -65,15 +65,37 @@ define([
   function runShuffle(cb) {
     var delay = parseFloat(document.getElementById('delay').value) * 1000;
     var order = document.getElementById('selectOrder').value;
+    var waitlistCutoff = parseInt(
+        document.getElementById('waitlistCutoff').value);
 
     removeAllCards(function () { 
+      $('#inputListContainer').addClass('hide');
+      $('#mainListContainer').addClass('hide');
+      $('#waitingListContainer').addClass('hide');
+
       var shuffled = cards.shuffleByPriority();
 
       if (order === 'ascending') {
         shuffled = shuffled.reverse();
       }
-      
-      addAllCards(shuffled, delay, 'fadeInUp', cb);
+
+      $('#mainListContainer').removeClass('hide')
+          .animateCss('slideInLeft', function() {});
+
+      if (waitlistCutoff === 0) {
+        addAllCards($('#main-list'), shuffled, delay, 'fadeInUp', cb);
+      } else {
+        addAllCards($('#main-list'), _.slice(shuffled, 0, waitlistCutoff), 
+            delay, 'fadeInUp', function () {
+
+          $('#waitingListContainer').removeClass('hide')
+              .animateCss('slideInLeft', function() {});
+
+          addAllCards($('#waiting-list'), _.slice(shuffled, waitlistCutoff),
+              delay, 'fadeInUp', cb);      
+        }); 
+      }
+
       updateOutputFileLink(shuffled);
     });
   }
@@ -83,24 +105,16 @@ define([
         io.generateOutputFile(shuffled);
   }
 
-  function addCard(title, value) {
-    var $cardsList = $('#cards-list');
-
-    $cardsList.append(CARD_TEMPLATE({title: title, value: value}));
-  }
-
   function scrollToBottom() {
     $(window).scrollTop($(window).height());
   }
 
-  function addAllCards(cards, delay, animation, cb) {
-    var $cardsList = $('#cards-list');
-
+  function addAllCards($list, cards, delay, animation, cb) {
     var animations = [];
     _.each(cards, function(card, index) {
       var a = new Promise(function (resolve) {
         setTimeout(function () {
-          var $newElement = $cardsList.append(
+          var $newElement = $list.append(
               CARD_TEMPLATE({ title: card.name, 
                               value: card.value,
                               animation: animation })

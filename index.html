@@ -22,9 +22,19 @@
   </header>
 
   <main>
-  <div class="section no-pad-bot" id="index-banner">
+  <div class="section no-pad-bot main-list" id="index-banner">
     <div class="container">
-      <div id="cards-list" class="row">
+      <div id="inputListContainer" class="input">
+        <div id="cards-list" class="row">
+        </div>
+      </div>
+      <div id="mainListContainer" class="output hide">
+        <h5>Order</h5>
+        <div id="main-list" class="row"></div>
+      </div>
+      <div id="waitingListContainer" class="output hide"> 
+        <h5>Waiting List</h5>
+        <div id="waiting-list" class="row"></div>
       </div>
     </div>
   </div>
@@ -43,6 +53,12 @@
             <option value="descending" selected>Descending</option>
           </select>
           <label>Order</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s6">
+          <input id="waitlistCutoff" type="number" class="validate" value=0>
+          <label for="waitlistCutoff">Waitlist Cutoff</label>
         </div>
       </div>
     </div>
@@ -95,8 +111,6 @@
   </footer>
 
   <!--  Scripts-->
-  <script data-main="js/main" src="https://cdn.jsdelivr.net/requirejs/2.1.22/require.min.js"</script>
-  <script src="js/main.js"></script>
-
+  <script data-main="js/main" src="https://cdn.jsdelivr.net/requirejs/2.1.22/require.min.js"></script>
   </body>
 </html>
