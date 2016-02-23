@@ -54,8 +54,10 @@ define([
   function setGoButtonEnabled(enabled) {
     if (enabled) {
       $('#btn-go').click(function () {
-        setGoButtonEnabled(false);
-        runShuffle(function () { setGoButtonEnabled(true); });
+        if (names.all().length > 0) {
+          setGoButtonEnabled(false);
+          runShuffle(function () { setGoButtonEnabled(true); });
+        }
       }).removeClass('disabled');
     } else {
       $('#btn-go').unbind('click').addClass('disabled');
