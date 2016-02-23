@@ -11,6 +11,10 @@ define([
   var all = function () {
     return allCards;
   };
+
+  var clear = function() {
+    allCards = [];
+  };
   
   var shuffleByPriority = function () {
     var groupedCards = _.groupBy(allCards, 'value');
@@ -29,6 +33,7 @@ define([
 
   return {
     add: add,
+    clear: clear,
     all: all,
     shuffleByPriority: shuffleByPriority
   }; 

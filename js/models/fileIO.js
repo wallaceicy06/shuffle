@@ -13,19 +13,27 @@ define([
       _.each(lines, function (line) {
         tokens = [];
 
+        if (line.length === 0) {
+          return;
+        }
+
         if (file.type === 'text/csv') {
           tokens = line.split(',');
         } else if (file.type === 'text/tsv') {
           tokens = line.split('\t');
+        } else {
+          tokens.push(line);
         }
 
-        if (tokens.length < 2) {
-          return;
-        } 
+        var name;
+        var value = null; 
+  
+        name = tokens[0];
 
-        var name = tokens[0];
-        var value = parseFloat(tokens[1]);
-        
+        if (tokens.length >= 2)  {
+          value = parseFloat(tokens[1]);
+        }
+
         names.push({ name: name, value: value });
       });
 
@@ -38,7 +46,11 @@ define([
   var generateOutputFile = function (names) {
     var lines = _.map(names, function (card, index) {
       var humanIndex = index + 1;
-      return new String(humanIndex + '. ' + card.name + ' (' + card.value + ')\n');
+      if (card.value === null) {
+        return new String(humanIndex + '. ' + card.name + '\n');
+      } else {
+        return new String(humanIndex + '. ' + card.name + ' (' + card.value + ')\n');
+      }
     });
 
     var data = new Blob(lines, { type: 'text/plain' });
