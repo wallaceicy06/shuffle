@@ -35,16 +35,24 @@ define([
       var file = fileChooser.files[0];
       document.getElementById('file-form').reset();
 
-      if (file.type !== 'text/csv' && file.type !== 'text/tsv') {
+      if (file.type !== 'text/csv' 
+         && file.type !== 'text/tsv'
+         && file.type !== 'text/plain') {
         return;
       }
 
       io.parseNames(file, function (names) {
+        cards.clear();
+
         _.each(names, function (name) {
           cards.add(name.name, name.value);  
         });
 
         removeAllCards(function () {
+          $('#inputListContainer').removeClass('hide');
+          $('#mainListContainer').addClass('hide');
+          $('#waitingListContainer').addClass('hide');
+
           addAllCards($('#cards-list'), cards.all(), 0, 'lightSpeedIn', function() {});
         });
       });
@@ -54,8 +62,10 @@ define([
   function setGoButtonEnabled(enabled) {
     if (enabled) {
       $('#btn-go').click(function () {
-        setGoButtonEnabled(false);
-        runShuffle(function () { setGoButtonEnabled(true); });
+        if (cards.all().length > 0) {
+          setGoButtonEnabled(false);
+          runShuffle(function () { setGoButtonEnabled(true); });
+        }
       }).removeClass('disabled');
     } else {
       $('#btn-go').unbind('click').addClass('disabled');
@@ -116,7 +126,7 @@ define([
         setTimeout(function () {
           var $newElement = $list.append(
               CARD_TEMPLATE({ title: card.name, 
-                              value: card.value,
+                              value: card.value === null ? '' : card.value,
                               animation: animation })
           );
       
@@ -151,10 +161,16 @@ define([
       animations.push(a);
     });
 
-    Promise.all(animations).then(function() {
+    var doWhenComplete = function() {
       $names.remove();
       cb();
-    });
+    } 
+
+    if (animations.length === 0) {
+      doWhenComplete();
+    } else {
+      Promise.all(animations).then(doWhenComplete);
+    }
   }
 
   return {
