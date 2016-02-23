@@ -48,8 +48,8 @@ something that was hacked together in a week. :)
 ## Credits
 
 Thanks are due to the [Materialize](https://github.com/Dogfalo/materialize) and
-[Shuffle](https://github.com/daneden/animate.css) libraries for which this
-project could not have been possible.
+[Shuffle](https://github.com/daneden/animate.css) libraries, without which
+this project could not have been possible.
 
 Thanks to the original authors of the command line programs: my colleagues
 [Kevin Lin](https://github.com/kevinslin) (Rice '13) and [Adam
