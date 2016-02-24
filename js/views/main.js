@@ -89,20 +89,16 @@ define([
         shuffled = shuffled.reverse();
       }
 
-      $('#mainListContainer').removeClass('hide')
-          .animateCss('slideInLeft', function() {});
+      $('#mainListContainer').removeClass('hide').animateCss('slideInLeft', function() {});
 
       if (waitlistCutoff === 0) {
-        addAllCards($('#main-list'), shuffled, delay, 'fadeInUp', cb);
+        addAllCards($('#main-list'), shuffled, delay, 'zoomInDown', cb);
       } else {
-        addAllCards($('#main-list'), _.slice(shuffled, 0, waitlistCutoff), 
-            delay, 'fadeInUp', function () {
+        addAllCards($('#main-list'), _.slice(shuffled, 0, waitlistCutoff), delay, 'zoomInDown', function () {
 
-          $('#waitingListContainer').removeClass('hide')
-              .animateCss('slideInLeft', function() {});
+          $('#waitingListContainer').removeClass('hide').animateCss('slideInLeft', function() {});
 
-          addAllCards($('#waiting-list'), _.slice(shuffled, waitlistCutoff),
-              delay, 'fadeInUp', cb);      
+          addAllCards($('#waiting-list'), _.slice(shuffled, waitlistCutoff), delay, 'zoomInDown', cb);      
         }); 
       }
 
@@ -116,7 +112,7 @@ define([
   }
 
   function scrollToBottom() {
-    $(window).scrollTop($(window).height());
+    $(window).scrollTop($(document).height());
   }
 
   function addAllCards($list, cards, delay, animation, cb) {
@@ -131,8 +127,9 @@ define([
           );
       
           $newElement.one(ANIMATION_END, function() { resolve(); });
-      
+
           scrollToBottom();
+
         }, delay * index); 
       });
 
