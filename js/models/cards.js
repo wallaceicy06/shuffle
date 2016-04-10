@@ -24,7 +24,8 @@ define([
     });
 
     var shuffledCards = [];
-    _.each(_.sortBy(_.keys(shuffledGroups)).reverse(), function(k) {
+    _.each(_.sortBy(_.keys(shuffledGroups),
+        function(k) { return parseFloat(k); }).reverse(), function(k) {
       [].push.apply(shuffledCards, shuffledGroups[k]); 
     });
 
