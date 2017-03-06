@@ -9,6 +9,12 @@ app.
 
 ## Usage
 
+**Note:** As of March 5, 2017, it appears that the file upload feature does not
+work properly on Windows. This is due to a bug with the file input tag
+behavior and affects all major web browswers on Windows. This bug is summarized
+in this Stack Overflow [post](http://stackoverflow.com/questions/37274976/type-property-of-file-input-not-being-set-in-windows),
+which unfortunately as of today appears to have no solution.
+
 1. Prepare a text file of items (and numerical values, if you desire), one per
 line. *Shuffle* supports the following formats:
    - `.csv`, separate names from values with commas
